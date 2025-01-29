@@ -13,9 +13,10 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #121212;
+            background-color: black;
             color: #f5f5f5;
             text-align: center;
+            overflow: hidden;
         }
         #timer {
             font-size: 2rem;
@@ -25,7 +26,7 @@
             display: none;
         }
         .links a {
-            color: #1db954;
+            color: white;
             text-decoration: none;
             margin: 0 10px;
             font-size: 1.2rem;
@@ -59,11 +60,23 @@
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
         }
+        .pause-icon {
+            display: flex;
+            justify-content: space-between;
+            width: 18px;
+            height: 20px;
+        }
+        .pause-icon div {
+            width: 6px;
+            height: 100%;
+            background-color: black;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
     <audio id="background-audio" loop>
-        <source src="background2.mp3" type="audio/mp3">
+        <source src="background4.mp3" type="audio/mp3">
         Seu navegador não suporta o elemento de áudio.
     </audio>
     <button class="play-button" id="play-audio">
@@ -72,22 +85,46 @@
     <div>
         <div id="timer">Carregando cronômetro...</div>
         <div class="links" id="links">
-            <a href="https://instagram.com/borghetti.7" target="_blank">Kdobg?</a>
+            <a href="https://instagram.com/borghetti.7" target="_blank">KDOBG?</a>
         </div>
     </div>
 
     <script>
-        const targetDate = new Date("2025-03-04T12:00:00");
+        const targetDate = new Date("2025-03-04T15:00:00Z"); // 15:00 UTC = 12:00 BRT
         const timerElement = document.getElementById("timer");
         const linksElement = document.getElementById("links");
         const audioButton = document.getElementById("play-audio");
         const audioElement = document.getElementById("background-audio");
+        let isPlaying = false;
 
         audioButton.addEventListener("click", () => {
-            audioElement.play().catch(error => {
-                console.error("Erro ao reproduzir o áudio:", error);
-            });
+            if (isPlaying) {
+                audioElement.pause();
+                isPlaying = false;
+                updateButtonIcon("play");
+            } else {
+                audioElement.play().catch(error => {
+                    console.error("Erro ao reproduzir o áudio:", error);
+                });
+                isPlaying = true;
+                updateButtonIcon("pause");
+            }
         });
+
+        function updateButtonIcon(state) {
+            audioButton.innerHTML = "";
+            const icon = document.createElement("div");
+            if (state === "play") {
+                icon.classList.add("play-icon");
+            } else if (state === "pause") {
+                icon.classList.add("pause-icon");
+                const bar1 = document.createElement("div");
+                const bar2 = document.createElement("div");
+                icon.appendChild(bar1);
+                icon.appendChild(bar2);
+            }
+            audioButton.appendChild(icon);
+        }
 
         function updateTimer() {
             const now = new Date();
